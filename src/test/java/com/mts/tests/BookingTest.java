@@ -1,8 +1,10 @@
 package com.mts.tests;
 
+import com.codeborne.selenide.WebDriverRunner;
 import com.codeborne.selenide.logevents.SelenideLogger;
 import com.mts.pages.HomePage;
 import com.mts.pages.SearchResultsPage;
+import com.mts.pages.MapPage;
 import com.mts.pages.HotelPage;
 import io.qameta.allure.junit5.AllureJunit5;
 import io.qameta.allure.selenide.AllureSelenide;
@@ -18,6 +20,9 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
+
+import static com.codeborne.selenide.Selenide.switchTo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Epic("Функциональность бронирования")
 @Feature("Поиск отелей")
@@ -63,8 +68,33 @@ public class BookingTest {
                 .enterCity("Прага")
                 .selectFlexibleDates();
         SearchResultsPage searchResultsPage = homePage.clickSearchButton();
-        searchResultsPage.clickMapButton();
-        HotelPage hotelPage = searchResultsPage.saveHotelInfoAndOpenMap();
-        hotelPage.verifyHotelInfo();
+        MapPage mapPage = searchResultsPage.clickShowOnMapButton();
+        System.out.println("Текущий URL: " + WebDriverRunner.url());
+        mapPage.saveHotelInfo();
+
+
+        HotelPage hotelPage = mapPage.clickImage();
+
+        System.out.println("Текущий URL: " + WebDriverRunner.url());
+        switchTo().window(1);
+        System.out.println("Текущий URL: " + WebDriverRunner.url());
+        hotelPage.saveHotelInfoNew();
+
+        String mapHotelName = mapPage.getHotelName();
+        String mapStarsText = mapPage.getStars();
+        String mapAverageRating = mapPage.getAverageRating();
+        String mapReviewsCount = mapPage.getReviewsCount();
+
+
+        String hotelNameFromPage = hotelPage.getHotelNameNew();
+        String starsTextFromPage = hotelPage.getStarsTextNew();
+        String averageRatingFromPage = hotelPage.getAverageRatingNew();
+        String reviewsCountFromPage = hotelPage.getReviewsCountNew();
+
+        assertEquals(mapHotelName, hotelNameFromPage, "Имя отеля не совпадает");
+        assertEquals(mapStarsText, starsTextFromPage, "Рейтинг звезд не совпадает");
+        assertEquals(mapAverageRating, averageRatingFromPage, "Средний рейтинг не совпадает");
+        assertEquals(mapReviewsCount, reviewsCountFromPage, "Количество отзывов не совпадает");
+//        hotelPage.verifyHotelInfo();
     }
 }
