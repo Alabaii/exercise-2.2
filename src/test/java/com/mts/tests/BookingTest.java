@@ -90,6 +90,7 @@ public class BookingTest {
         String starsTextFromPage = hotelPage.getStarsTextNew();
         String averageRatingFromPage = hotelPage.getAverageRatingNew();
         String reviewsCountFromPage = hotelPage.getReviewsCountNew();
+        averageRatingFromPage = averageRatingFromPage.replace(".",",");
 
         assertEquals(mapHotelName, hotelNameFromPage, "Имя отеля не совпадает");
         assertEquals(mapStarsText, starsTextFromPage, "Рейтинг звезд не совпадает");
